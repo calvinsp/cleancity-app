@@ -23,29 +23,38 @@ class AuthenticatedSessionController extends Controller
      * Handle an incoming authentication request.
      */
     public function store(LoginRequest $request): RedirectResponse
-{
-    $request->authenticate();
+    {
+        $request->authenticate();
 
-    $request->session()->regenerate();
+        $request->session()->regenerate();
 
-    $locale = $request->route('locale') ?? config('app.locale');
+        // Ambil locale dari route {locale} atau fallback ke config default
+        $locale = $request->route('locale')
+            ?? $request->session()->get('app_locale')
+            ?? config('app.locale', 'id');
 
-return redirect()->route('home.dashboard', ['locale' => $locale]);
+        // Simpan locale ke session supaya konsisten
+        $request->session()->put('app_locale', $locale);
 
-}
-
-
+        return redirect()->route('home.dashboard', ['locale' => $locale]);
+    }
 
     /**
      * Destroy an authenticated session.
      */
     public function destroy(Request $request): RedirectResponse
     {
+        // Ambil locale sebelum session direset
+        $locale = $request->route('locale')
+            ?? $request->session()->get('app_locale')
+            ?? config('app.locale', 'id');
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        // Redirect ke halaman login dengan locale yang sama
+        return redirect()->route('login', ['locale' => $locale]);
     }
 }
