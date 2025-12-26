@@ -1,5 +1,3 @@
-{{-- resources/views/laporan/index.blade.php --}}
-
 @extends('layouts.app')
 
 @section('title', __('Daftar Laporan'))
@@ -30,6 +28,42 @@
                 </a>
             </div>
 
+            {{-- FILTER 30 HARI TERAKHIR --}}
+            <div class="bg-white shadow-sm rounded-2xl p-6 mb-6 border border-gray-100">
+                <h3 class="font-semibold text-lg mb-4">{{ __('Laporan 30 Hari Terakhir') }}</h3>
+
+                <form method="GET" action="{{ route('laporan.index', ['locale' => $locale]) }}" class="flex gap-3 flex-wrap items-end">
+                    <div class="flex-1 min-w-[200px]">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Dari Tanggal') }}</label>
+                        <input type="date" name="from" value="{{ request('from') }}" class="w-full border border-gray-300 rounded-lg text-sm px-3 py-2">
+                    </div>
+
+                    <div class="flex-1 min-w-[200px]">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Sampai Tanggal') }}</label>
+                        <input type="date" name="to" value="{{ request('to') }}" class="w-full border border-gray-300 rounded-lg text-sm px-3 py-2">
+                    </div>
+
+                    <div class="flex gap-2">
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition">
+                            {{ __('Cari') }}
+                        </button>
+
+                        <a href="{{ route('laporan.index', ['locale' => $locale]) }}" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg text-sm hover:bg-gray-300 transition">
+                            {{ __('Reset') }}
+                        </a>
+
+                        @auth
+                            @if(auth()->user()->isAdmin())
+                                <a href="{{ route('laporan.export', ['from' => request('from'), 'to' => request('to')]) }}" class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition">
+                                    📥 {{ __('Export Laporan (CSV)') }}
+                                </a>
+                            @endif
+                        @endauth
+                    </div>
+                </form>
+            </div>
+
+            {{-- TABEL LAPORAN --}}
             <div class="bg-white shadow-sm sm:rounded-2xl border border-gray-100 overflow-hidden">
                 @if ($laporan->count() === 0)
                     <div class="p-6">
@@ -52,7 +86,7 @@
                                         {{ __('Lokasi') }}
                                     </th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                        {{ __('Tanggal') }}
+                                        {{ __('Tanggal Laporan') }}
                                     </th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                         {{ __('Status') }}
@@ -64,9 +98,9 @@
                             </thead>
                             <tbody class="divide-y divide-gray-100">
                                 @foreach ($laporan as $item)
-                                    <tr>
-                                        <td class="px-4 py-3 text-gray-700">
-                                            {{ $item->id }}
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 text-gray-700 font-medium">
+                                            #{{ $item->id }}
                                         </td>
                                         <td class="px-4 py-3 text-gray-700">
                                             {{ $item->jenisSampah?->getTranslatedName() ?? '-' }}
@@ -77,8 +111,15 @@
                                         <td class="px-4 py-3 text-gray-700">
                                             {{ $item->created_at?->format('d/m/Y H:i') }}
                                         </td>
-                                        <td class="px-4 py-3 text-gray-700">
-                                            {{ $item->getStatusLabel() }}
+                                        <td class="px-4 py-3">
+                                            <span class="inline-block px-2 py-1 rounded text-xs font-medium
+                                                @if($item->status === 'pending') bg-yellow-100 text-yellow-800
+                                                @elseif($item->status === 'diproses') bg-blue-100 text-blue-800
+                                                @elseif($item->status === 'selesai') bg-green-100 text-green-800
+                                                @else bg-gray-100 text-gray-800
+                                                @endif">
+                                                {{ $item->getStatusLabel() }}
+                                            </span>
                                         </td>
                                         <td class="px-4 py-3 text-right">
                                             <a href="{{ route('laporan.show', ['locale' => $locale, 'laporan' => $item->id]) }}"

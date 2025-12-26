@@ -10,13 +10,30 @@ use App\Notifications\LaporanSelesaiNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class LaporanController extends Controller
 {
     public function index($locale)
     {
         $user = Auth::user();
+        $from = request('from');
+        $to   = request('to');
 
+        $query = Laporan::with(['user', 'jenisSampah', 'lokasi']);
+
+        // Filter by date range
+        if ($from) {
+            $query->whereDate('created_at', '>=', $from);
+        }
+        if ($to) {
+            $query->whereDate('created_at', '<=', $to);
+        }
+
+        // Order by latest first
+        $query->orderByDesc('created_at');
+
+        // Filter by role
         if (
             $user &&
             (
@@ -24,11 +41,16 @@ class LaporanController extends Controller
                 (method_exists($user, 'isPetugas') && $user->isPetugas())
             )
         ) {
-            $laporan = Laporan::with(['user', 'jenisSampah', 'lokasi'])->paginate(10);
+            $laporan = $query->paginate(10);
         } elseif ($user) {
-            $laporan = $user->laporan()->with(['jenisSampah', 'lokasi'])->paginate(10);
+            $laporan = $user->laporan()
+                ->when($from, fn($q) => $q->whereDate('created_at', '>=', $from))
+                ->when($to, fn($q) => $q->whereDate('created_at', '<=', $to))
+                ->with(['jenisSampah', 'lokasi'])
+                ->orderByDesc('created_at')
+                ->paginate(10);
         } else {
-            $laporan = Laporan::with(['user', 'jenisSampah', 'lokasi'])->paginate(10);
+            $laporan = $query->paginate(10);
         }
 
         return view('laporan.index', compact('laporan'));
@@ -62,12 +84,8 @@ class LaporanController extends Controller
 
         return redirect()
             ->route('laporan.index', ['locale' => $locale])
-            ->with('success', 'Laporan berhasil dibuat!');
+            ->with('success', __('Laporan berhasil dibuat!'));
     }
-
-    // ======================
-    //  DETAIL / EDIT / CRUD
-    // ======================
 
     public function show($locale, $laporan)
     {
@@ -96,6 +114,14 @@ class LaporanController extends Controller
             'foto'            => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
+        // Handle hapus foto lama
+        if ($request->has('hapus_foto') && $laporan->foto) {
+            Storage::disk('public')->delete($laporan->foto);
+            $laporan->foto = null;
+            $laporan->save();
+        }
+
+        // Handle upload foto baru
         if ($request->hasFile('foto')) {
             if ($laporan->foto) {
                 Storage::disk('public')->delete($laporan->foto);
@@ -107,7 +133,7 @@ class LaporanController extends Controller
 
         return redirect()
             ->route('laporan.show', ['locale' => $locale, 'laporan' => $laporan->id])
-            ->with('success', 'Laporan berhasil diperbarui!');
+            ->with('success', __('Laporan berhasil diperbarui!'));
     }
 
     public function destroy(Request $request, $locale, $laporan)
@@ -122,12 +148,66 @@ class LaporanController extends Controller
 
         return redirect()
             ->route('laporan.index', ['locale' => $locale])
-            ->with('success', 'Laporan berhasil dihapus!');
+            ->with('success', __('Laporan berhasil dihapus!'));
     }
 
-    // ======================
-    //  UPDATE STATUS
-    // ======================
+    public function export(Request $request): StreamedResponse
+    {
+        $from = $request->query('from');
+        $to   = $request->query('to');
+
+        $query = Laporan::with(['user', 'jenisSampah', 'lokasi'])
+            ->orderByDesc('created_at');
+
+        if ($from) {
+            $query->whereDate('created_at', '>=', $from);
+        }
+
+        if ($to) {
+            $query->whereDate('created_at', '<=', $to);
+        }
+
+        $laporan = $query->get();
+
+        $filename = 'laporan-cleancity-' . now()->format('Y-m-d') . '.csv';
+
+        $headers = [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        return response()->stream(function () use ($laporan) {
+            $handle = fopen('php://output', 'w');
+
+            fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            fputcsv($handle, [
+                __('ID'),
+                __('Pelapor'),
+                __('Email'),
+                __('Jenis Sampah'),
+                __('Lokasi'),
+                __('Status'),
+                __('Tanggal Laporan'),
+                __('Deskripsi'),
+            ]);
+
+            foreach ($laporan as $item) {
+                fputcsv($handle, [
+                    $item->id,
+                    optional($item->user)->name ?? '-',
+                    optional($item->user)->email ?? '-',
+                    optional($item->jenisSampah)->getTranslatedName() ?? '-',
+                    optional($item->lokasi)->getTranslatedName() ?? '-',
+                    $item->getStatusLabel() ?? __('Unknown'),
+                    optional($item->created_at)->format('Y-m-d H:i') ?? '-',
+                    preg_replace("/\r\n|\r|\n/", ' ', (string) $item->deskripsi),
+                ]);
+            }
+
+            fclose($handle);
+        }, 200, $headers);
+    }
 
     public function updateStatus(Request $request, $locale, $laporan)
     {
@@ -151,12 +231,12 @@ class LaporanController extends Controller
 
                 return redirect()
                     ->route('laporan.show', ['locale' => $locale, 'laporan' => $laporan->id])
-                    ->with('success', 'Status laporan berhasil diperbarui oleh admin.');
+                    ->with('success', __('Status laporan berhasil diperbarui oleh admin.'));
             }
 
             return redirect()
                 ->route('laporan.show', ['locale' => $locale, 'laporan' => $laporan->id])
-                ->with('error', 'Status tidak valid untuk admin.');
+                ->with('error', __('Status tidak valid untuk admin.'));
         }
 
         // PETUGAS
@@ -167,7 +247,7 @@ class LaporanController extends Controller
 
                 return redirect()
                     ->route('laporan.show', ['locale' => $locale, 'laporan' => $laporan->id])
-                    ->with('success', 'Status laporan diperbarui menjadi diproses.');
+                    ->with('success', __('Status laporan diperbarui menjadi diproses.'));
             }
 
             if ($request->status === 'request_selesai' && $laporan->status === 'diproses') {
@@ -182,16 +262,16 @@ class LaporanController extends Controller
 
                 return redirect()
                     ->route('laporan.show', ['locale' => $locale, 'laporan' => $laporan->id])
-                    ->with('success', 'Permintaan penyelesaian laporan sudah dikirim ke admin.');
+                    ->with('success', __('Permintaan penyelesaian laporan sudah dikirim ke admin.'));
             }
 
             return redirect()
                 ->route('laporan.show', ['locale' => $locale, 'laporan' => $laporan->id])
-                ->with('error', 'Petugas tidak diizinkan melakukan aksi ini.');
+                ->with('error', __('Petugas tidak diizinkan melakukan aksi ini.'));
         }
 
         return redirect()
             ->route('laporan.show', ['locale' => $locale, 'laporan' => $laporan->id])
-            ->with('error', 'Anda tidak memiliki hak untuk mengubah status laporan.');
+            ->with('error', __('Anda tidak memiliki hak untuk mengubah status laporan.'));
     }
 }

@@ -30,14 +30,14 @@
                 <p class="mb-3">{{ $laporan->user->name }} ({{ $laporan->user->role->role_name }})</p>
 
                 <p class="mb-1"><strong>{{ __('Jenis Sampah') }}:</strong></p>
-                <p class="mb-0">{{ $laporan->jenisSampah->nama }}</p>
+                <p class="mb-0">{{ $laporan->jenisSampah->getTranslatedName() }}</p>
             </div>
             <div class="col-md-6">
                 <p class="mb-1"><strong>{{ __('Tanggal Laporan') }}:</strong></p>
                 <p class="mb-3">{{ $laporan->created_at->format('d/m/Y H:i') }}</p>
 
                 <p class="mb-1"><strong>{{ __('Lokasi TPS') }}:</strong></p>
-                <p class="mb-0">{{ $laporan->lokasi->nama }}<br>{{ $laporan->lokasi->alamat }}</p>
+                <p class="mb-0">{{ $laporan->lokasi->getTranslatedName() }}<br>{{ $laporan->lokasi->alamat }}</p>
             </div>
         </div>
 
@@ -46,13 +46,16 @@
             <p class="mb-0">{{ $laporan->deskripsi }}</p>
         </div>
 
-        @if($laporan->foto)
-            <div class="mt-3">
-                <p class="mb-2"><strong>{{ __('Foto') }}:</strong></p>
-                <img src="{{ asset('storage/' . $laporan->foto) }}" alt="Foto Laporan"
+        {{-- FOTO --}}
+        <div class="mb-3">
+            <p class="mb-2"><strong>{{ __('Foto') }}:</strong></p>
+            @if($laporan->foto)
+                <img src="{{ Storage::url($laporan->foto) }}" alt="Foto Laporan"
                      class="img-fluid rounded border" style="max-height: 400px;">
-            </div>
-        @endif
+            @else
+                <p class="text-muted">{{ __('Belum ada foto') }}</p>
+            @endif
+        </div>
 
         @if($laporan->status_request === 'request_selesai')
             <div class="alert alert-warning mt-3 mb-0 py-2 px-3">

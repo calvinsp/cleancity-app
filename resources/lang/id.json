@@ -22,7 +22,6 @@
   "Login": "Masuk",
   "Logout": "Keluar",
 
-
   "Buat Laporan": "Buat Laporan",
   "Edit Laporan": "Edit Laporan",
   "Jenis Sampah": "Jenis Sampah",
@@ -60,6 +59,17 @@
   "Tanggal Laporan": "Tanggal Laporan",
   "Lokasi TPS": "Lokasi TPS",
   "Foto": "Foto",
+  "Belum ada foto": "Belum ada foto",
+  "Opsional": "Opsional",
+  "Pilih Jenis Sampah": "Pilih Jenis Sampah",
+  "Pilih Lokasi": "Pilih Lokasi",
+  "Format: JPG, PNG, GIF. Ukuran maksimal: 2MB": "Format: JPG, PNG, GIF. Ukuran maksimal: 2MB",
+  "Ganti Foto": "Ganti Foto",
+  "Foto Saat Ini": "Foto Saat Ini",
+  "Hapus foto ini": "Hapus foto ini",
+  "Laporan berhasil dibuat!": "Laporan berhasil dibuat!",
+  "Laporan berhasil diperbarui!": "Laporan berhasil diperbarui!",
+  "Laporan berhasil dihapus!": "Laporan berhasil dihapus!",
   "Request selesai dari petugas.": "Request selesai dari petugas.",
   "Ubah Status Laporan": "Ubah Status Laporan",
   "Simpan Status": "Simpan Status",
@@ -100,5 +110,24 @@
   "Anggota 2": "Anggota 2",
   "Anggota 3": "Anggota 3",
   "Kontribusi terhadap SDG 11": "Kontribusi terhadap SDG 11",
-  "sdg11_desc": "Dengan mempermudah pelaporan masalah kebersihan seperti tumpukan sampah, limbah berbau, atau TPS yang penuh, CleanCity membantu terciptanya kota dan komunitas kampus yang lebih aman, nyaman, dan berkelanjutan."
+  "sdg11_desc": "Dengan mempermudah pelaporan masalah kebersihan seperti tumpukan sampah, limbah berbau, atau TPS yang penuh, CleanCity membantu terciptanya kota dan komunitas kampus yang lebih aman, nyaman, dan berkelanjutan.",
+
+  "Laporan 30 Hari Terakhir": "Laporan 30 Hari Terakhir",
+  "Dari Tanggal": "Dari Tanggal",
+  "Sampai Tanggal": "Sampai Tanggal",
+  "Cari": "Cari",
+  "Reset": "Reset",
+  "Pelapor": "Pelapor",
+  "Export Laporan (CSV)": "Export Laporan (CSV)",
+  "Status tidak valid untuk admin.": "Status tidak valid untuk admin.",
+  "Status laporan berhasil diperbarui oleh admin.": "Status laporan berhasil diperbarui oleh admin.",
+  "Status laporan diperbarui menjadi diproses.": "Status laporan diperbarui menjadi diproses.",
+  "Permintaan penyelesaian laporan sudah dikirim ke admin.": "Permintaan penyelesaian laporan sudah dikirim ke admin.",
+  "Petugas tidak diizinkan melakukan aksi ini.": "Petugas tidak diizinkan melakukan aksi ini.",
+  "Anda tidak memiliki hak untuk mengubah status laporan.": "Anda tidak memiliki hak untuk mengubah status laporan.",
+  "Unknown": "Tidak Diketahui",
+
+  "Laporan 30 Hari Terakhir per Jenis Sampah": "Laporan 30 Hari Terakhir per Jenis Sampah",
+  "Data di atas berdasarkan laporan yang dibuat dalam 30 hari terakhir.": "Data di atas berdasarkan laporan yang dibuat dalam 30 hari terakhir.",
+  "Jumlah Laporan": "Jumlah Laporan"
 }

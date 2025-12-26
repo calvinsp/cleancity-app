@@ -13,14 +13,24 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 | Redirect root ke locale default
 |--------------------------------------------------------------------------
-| /  ->  /{locale}/dashboard
+| / -> /{locale}/dashboard
 */
 Route::get('/', function () {
     $locale = config('app.locale', 'en');
-
     App::setLocale($locale);
 
     return redirect()->route('home.dashboard', ['locale' => $locale]);
+});
+
+/*
+|--------------------------------------------------------------------------
+| EXPORT — DI LUAR LOCALE GROUP (PENTING!)
+|--------------------------------------------------------------------------
+| /laporan/export bukan /{locale}/laporan/export
+*/
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/laporan/export', [LaporanController::class, 'export'])
+        ->name('laporan.export');
 });
 
 /*
