@@ -59,6 +59,11 @@
                             {{ $locale === 'en' ? 'selected' : '' }}>
                             EN
                         </option>
+                        <option
+                            value="{{ route(Route::currentRouteName(), array_merge($params, ['locale' => 'zh'])) }}"
+                            {{ $locale === 'zh' ? 'selected' : '' }}>
+                            中文
+                        </option>
                     </select>
                 </div>
             </div>

@@ -27,7 +27,7 @@ class AppServiceProvider extends ServiceProvider
         $locale = Request::segment(1) ?: config('app.locale', 'en');
 
         // Validasi terhadap daftar locale yang diperbolehkan
-        $allowedLocales = config('app.locales', ['id', 'en']);
+        $allowedLocales = config('app.locales', ['id', 'en', 'zh']);
 
         if (! in_array($locale, $allowedLocales, true)) {
             $locale = config('app.locale', 'en');

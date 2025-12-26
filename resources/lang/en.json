@@ -19,6 +19,9 @@
   "Sedang Diproses": "In Progress",
   "Menunggu Konfirmasi": "Awaiting Confirmation",
   "Tidak Diketahui": "Unknown",
+  "Login": "Login",
+  "Logout": "Logout",
+
 
   "Buat Laporan": "Create Report",
   "Edit Laporan": "Edit Report",
@@ -83,5 +86,19 @@
   "Password Lama": "Current Password",
   "Password Baru": "New Password",
   "Konfirmasi Password Baru": "Confirm New Password",
-  "Ubah Password": "Change Password"
+  "Ubah Password": "Change Password",
+
+  "About Us": "About Us",
+  "Tentang CleanCity": "About CleanCity",
+  "desc_cleancity_1": "CleanCity is a city cleanliness reporting platform that helps residents and campus communities report cleanliness issues quickly and in a structured way.",
+  "desc_cleancity_2": "Through CleanCity, users can report garbage piles, bad odors, full collection points, or other cleanliness issues so that related parties can respond more efficiently.",
+  "desc_cleancity_3": "This project aligns with <span class=\"font-semibold\">SDG 11 (Sustainable Cities & Communities)</span>, supporting the creation of cleaner, safer, and more sustainable urban environments.",
+  "SDG 11 – Sustainable Cities & Communities": "SDG 11 – Sustainable Cities & Communities",
+  "Kelompok 8": "Group 8",
+  "Proyek Web Programming – BINUS University": "Web Programming Project – BINUS University",
+  "Anggota 1": "Member 1",
+  "Anggota 2": "Member 2",
+  "Anggota 3": "Member 3",
+  "Kontribusi terhadap SDG 11": "Contribution to SDG 11",
+  "sdg11_desc": "By simplifying the reporting of cleanliness issues such as garbage piles, bad odors, or full collection points, CleanCity helps create safer, more comfortable, and more sustainable cities and campus communities."
 }

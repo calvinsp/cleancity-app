@@ -83,7 +83,7 @@ return [
     'faker_locale' => env('APP_FAKER_LOCALE', 'id_ID'),
 
     // opsional: daftar locale yang didukung (buat pengecekan sendiri)
-    'supported_locales' => ['id', 'en'],
+    'supported_locales' => ['id', 'en', 'zh'],
 
     /*
     |--------------------------------------------------------------------------
