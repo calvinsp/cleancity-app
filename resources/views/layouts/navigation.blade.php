@@ -33,6 +33,15 @@
                     <a href="{{ route('profile.edit', ['locale' => $locale]) }}" class="hover:text-blue-600 transition">
                         {{ __('Profil') }}
                     </a>
+
+                    {{-- Tombol Logout --}}
+                    <form method="POST" action="{{ route('logout', ['locale' => $locale]) }}">
+                        @csrf
+                        <button type="submit"
+                                class="text-red-600 hover:text-red-700 transition">
+                            {{ __('Logout') }}
+                        </button>
+                    </form>
                 </div>
 
                 <div>
